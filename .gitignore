@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.trec
+*.jsonl
+*.tsv
+*.tar.gz
+results/
+queries/
+rewrites/
+runs/
+*.env
+.env
+/scratch-shared/
+.DS_Store

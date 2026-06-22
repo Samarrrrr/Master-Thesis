@@ -1,0 +1,7 @@
+pyserini
+sentence-transformers
+torch
+transformers
+openai
+groq
+tqdm
