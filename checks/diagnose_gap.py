@@ -1,10 +1,15 @@
 """
-Why are 6000 official-only holes unlabelled on CAsT-19 when judge_holes.py
-labelled all 'not-in-qrels' top-10 holes? Break the missing set into:
-  A: missing & in qrels        (judged-but-out-of-pool -> need LLM topup for opt-a)
-  B: missing & NOT in qrels & retrieved by some official run beyond depth-10
-  C: missing & NOT in qrels & truly never retrieved by any official run
-This tells us whether the old labelling used a different k/depth or pool.
+diagnose_gap.py -- account for holes left unlabelled under the official-only pool.
+
+Partitions the unlabelled missing documents (top-k holes not in the depth-10
+pool and not already labelled) into three classes, to confirm the label set is
+complete and to locate any gap:
+    A  in qrels but out of pool   -- judged-but-out-of-pool; needs LLM top-up
+    B  not in qrels, but retrieved by some official run beyond depth 10
+    C  not in qrels, never retrieved by any official run
+
+A large class C would indicate holes that should already have been labelled,
+pointing to a different depth, cut-off, or pool in earlier labelling.
 """
 import glob, os, csv, sys
 sys.path.insert(0, os.path.expanduser("~/thesis-final/analysis")); import config as c
