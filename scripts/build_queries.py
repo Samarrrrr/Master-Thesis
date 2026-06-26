@@ -1,56 +1,22 @@
 """
-============================================================================
- build_queries.py  --  Stage 1 of the pipeline: assemble per-turn query records
-============================================================================
+build_queries.py -- Stage 1: assemble per-turn query records.
 
-WHAT THIS DOES
---------------
-Turns the raw CAsT topic files into one clean per-turn record file (jsonl) that
-every downstream step reads. Each line describes ONE conversational turn:
+Converts the raw CAsT topic files into one per-turn JSONL record read by every
+downstream stage. Each line describes one conversational turn:
+    query_id        e.g. "31_2" (topic 31, turn 2)
+    depth           turn position in the conversation (SRQ2 axis)
+    raw_utterance   the user's literal turn        (the "raw" system)
+    context         previous raw user utterances   (input to the rewriters)
+    manual_rewrite  human-resolved query, if provided (the "human" system)
 
-    query_id        e.g. "31_2"  (topic 31, turn 2)
-    depth           turn position in the conversation (1, 2, 3, ...)  -> SRQ3 axis
-    raw_utterance   the user's literal turn ("Is it treatable?")      -> "raw" system
-    context         list of PREVIOUS RAW UTTERANCES in this topic     -> fed to rewriters
-    manual_rewrite  the human-resolved query, if the dataset ships one -> "human" system
+"raw" and "human" are produced directly from this file with no model; the other
+six systems read raw_utterance and context and rewrite in Stage 2. Context holds
+only previous user utterances (not system responses), uniformly across systems
+and both collections, so the comparison varies in the rewriter alone.
 
-WHAT IT FEEDS
--------------
-Two of the eight systems come straight out of this file with NO model:
-  * raw    = use raw_utterance directly   (effectiveness FLOOR)
-  * human  = use manual_rewrite directly  (effectiveness CEILING)
-The other six (t5, quretec, 4x LLM) read raw_utterance + context and PRODUCE a
-rewrite in Stage 2.
-
-DESIGN CHOICE — CONTEXT IS QUESTIONS-ONLY (verified, deliberate)
-----------------------------------------------------------------
-`context` accumulates ONLY previous raw user utterances -- never the canonical
-system responses. This is applied UNIFORMLY to every rewriter and BOTH years.
-QPP4CS (Meng et al.) prepends canonical responses for CAsT-20 t5; we deliberately
-do NOT, because our design's whole value is that systems differ in exactly ONE
-thing -- the rewriter -- and not in what context the rewriter sees. Standardising
-context to prior utterances keeps the comparison clean. The cost is a small
-deviation from published reproduction numbers, which we document in the methods.
-(Note: the QuReTeC arm is precomputed by Vakulenko et al. and its 2020 file used
-question+answer context; we take it as-is to match the literature, a minor and
-documented exception to the uniform-context rule for that one system.)
-
-CAsT-2019 HUMAN-REWRITE FIX (verified correct)
-----------------------------------------------
-CAsT-2019's human rewrites are NOT in the main topics json -- they live in a
-separate TSV (evaluation_topics_annotated_resolved_v1.0.tsv). An earlier pipeline
-missed this, so the "human" ceiling system was absent for 2019. This builder
-loads that TSV so "human" exists for BOTH years, and reports coverage.
-
-INPUT FILES (under --raw):
-  CAsT-2019: evaluation_topics_v1.0.json
-             evaluation_topics_annotated_resolved_v1.0.tsv   ("31_1 <tab> text")
-  CAsT-2020: 2020_automatic_evaluation_topics_v1.0.json
-             2020_manual_evaluation_topics_v1.0.json
-
-OUTPUT:
-  queries_cast2019.jsonl, queries_cast2020.jsonl
-============================================================================
+Input  (under --raw): the CAsT-2019 and CAsT-2020 topic JSONs, plus the 2019
+       resolved-rewrite TSV (which carries the 2019 human rewrites).
+Output: queries_cast2019.jsonl, queries_cast2020.jsonl
 """
 
 import argparse
