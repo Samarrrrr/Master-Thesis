@@ -1,24 +1,15 @@
 """
-============================================================================
- table4_diagnostic.py  --  assessor-bias check for SRQ1
-============================================================================
-PURPOSE (state this in the thesis caption): phi+ relies on the gpt-4o assessor
-to judge holes. A skeptic could argue the assessor is BIASED -- that it rates
-the unusual documents LLM systems retrieve as relevant more generously, making
-the Table 3 phi+ gap an artefact of a generous judge rather than a real effect.
+table4_diagnostic.py -- assessor-bias check for SRQ1.
 
-This table refutes that. For each system we report:
-  holes          = number of holes the system produced (under the chosen pool)
-  positive_rate  = fraction of those holes the assessor judged relevant (>=2)
+phi+ relies on the gpt-4o assessor to judge holes, so a generous assessor could
+in principle inflate the phi+ gap between LLM and traditional systems. For each
+system this reports the number of holes produced and the positive rate (fraction
+the assessor judged relevant, grade >= 2). The positive rate tracks system
+effectiveness rather than arm -- weakest for raw, highest for the strongest
+systems regardless of LLM or traditional -- so the phi+ ordering reflects how
+many holes a system produces, not an assessor bias toward particular systems.
 
-If the assessor were biased toward LLM systems, LLM positive rates would be
-INFLATED. Instead the positive rate tracks system EFFECTIVENESS, not LLM-ness:
-weak systems (raw) score lowest, strong systems highest, regardless of arm.
-So the phi+ ordering in Table 3 reflects how many holes each system produces,
-not a bias of the assessor toward particular systems.
-
-Uses the committed MIXED pool + pinned labels. (Also prints official-only.)
-============================================================================
+Uses the committed mixed pool with pinned labels; also prints official-only.
 """
 import os, sys, glob, csv
 from collections import defaultdict
