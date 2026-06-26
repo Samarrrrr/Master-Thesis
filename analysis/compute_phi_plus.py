@@ -1,3 +1,22 @@
+"""
+compute_phi_plus.py -- SRQ1: per-system missing judgments, LLM vs traditional.
+
+For each of the eight systems, computes Unjudged@10 (relevance-agnostic) and phi+
+(relevant holes, using the pinned gpt-4o labels) per turn, under leave-one-model-
+out. Two pools are reported: the mixed pool (official runs plus the other seven
+systems) and official-only. On CAsT-2020, T5- and QuReTeC-based official runs are
+carved out of the pool when scoring the t5/quretec systems, keeping the
+traditional arm non-contributing.
+
+Also reports the matched-pair phi+ differences (LLM minus traditional of
+comparable effectiveness), the headline being llama-3.3-70b vs t5, where the LLM
+system is the less effective yet creates more relevant holes.
+
+Sanity checks per run: phi+ <= phi, zero unlabelled holes, and raw ranking above
+human on Unjudged@10.
+
+Outputs: table3_phiplus_mixed_<ds>.csv, table3_phiplus_officialonly_<ds>.csv
+"""
 import os, sys, glob, csv
 from collections import defaultdict
 sys.path.insert(0, os.path.dirname(__file__)); import config as c
