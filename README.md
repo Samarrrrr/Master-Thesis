@@ -1,4 +1,3 @@
-# Reusability of Conversational Search Test Collections for LLM-Based Systems
 # Beyond Effectiveness: The LLM Effect on Conversational Test-Collection Reusability
 
 A controlled comparison on **TREC CAsT 2019 and 2020**.
@@ -185,14 +184,3 @@ commands (per system and per collection).
 - On CAsT-2020, official runs that are themselves T5- or QuReTeC-based are excluded
   from the pool when scoring the `t5`/`qretec` systems, so the traditional arm counts
   as genuinely non-contributing (`baselineQR` and `humanQR` are retained).
-
-## Citation / acknowledgement
-
-Methodological foundation: Abbasiantaeb et al., *Improving the Reusability of
-Conversational Search Test Collections* (ECIR 2025), and *Generating Multi-Aspect
-Queries for Conversational Search* (MQ4CS, EACL 2026).
-
----
-
-*This repository contains the analysis code and derived results for the thesis. The
-raw corpus, indexes, and run files are obtained separately (see the Dataset section).*
