@@ -1,38 +1,24 @@
 """
-============================================================================
- retrieve_rerank.py  --  Stage 2 of the pipeline: BM25 + cross-encoder rerank
-============================================================================
+retrieve_rerank.py -- Stage 2: BM25 retrieval with cross-encoder reranking.
 
-WHAT THIS DOES
---------------
-Takes ONE system's queries and produces ONE TREC run file, using the FIXED
-retrieval pipeline that is byte-for-byte identical for all 8 systems:
+Takes one system's queries and produces one TREC run file through the fixed
+pipeline shared, identically, by all eight systems:
+    queries -> BM25 batch_search (Pyserini, k1=0.9, b=0.4), top-100 per query
+            -> cross-encoder rerank (ms-marco-MiniLM-L-6-v2, max_len 512)
+            -> TREC run file: qid Q0 docid rank score tag (depth 100)
 
-    queries  ->  BM25 batch_search (Pyserini, k1=0.9, b=0.4), top-100 per query
-             ->  cross-encoder rerank (ms-marco-MiniLM-L-6-v2) reorders the 100
-             ->  TREC run file:  qid Q0 docid rank score tag   (100 deep)
+Only the query differs between systems; the index, BM25 parameters, reranker,
+and depth are constant, so any difference in retrieved documents (and thus in
+holes) traces solely to the rewriter. The query text is selected by
+--query_field: raw_utterance for "raw", manual_rewrite for "human", and rewrite
+for the model-based systems. The script is year-agnostic; per-collection rewriter
+handling lives upstream in the rewrite scripts.
 
-WHY THE PIPELINE IS FIXED
--------------------------
-Only the QUERY differs between systems (it came from a different rewriter).
-Index, BM25 params, reranker, and depth are constant. So any difference in the
-documents retrieved -- and therefore in the holes a system creates -- traces
-solely to the rewriter. That isolation is the experimental design.
+Configuration follows MQ4CS; non-LLM runs reproduce the published nDCG/Recall
+within a few points.
 
-WHERE EACH SYSTEM'S QUERY COMES FROM (set by --query_field):
-  raw    : raw_utterance   field of queries_<ds>.jsonl
-  human  : manual_rewrite  field of queries_<ds>.jsonl
-  others : rewrite         field of rewrites_<ds>_<model>.jsonl
-
-NOTE ON PER-YEAR HANDLING: this script is year-agnostic on purpose. It retrieves
-with whatever query text it is given. The per-year t5 context handling
-(CAsT-19 = question only; CAsT-20 = prepend canonical response) lives UPSTREAM
-in rewrite_t5.py, not here.
-
-CONFIG MATCHES MQ4CS: k1=0.9, b=0.4, top-100, ms-marco-MiniLM-L-6-v2, max_len 512.
-Validated: t5/human runs reproduce the published nDCG/Recall within a few points
-(small gap attributable to different rewriter models than MQ4CS).
-============================================================================
+Input:  queries_<ds>.jsonl or rewrites_<ds>_<model>.jsonl
+Output: run_<ds>_<system>.trec
 """
 
 import argparse
