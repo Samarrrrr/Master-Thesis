@@ -1,11 +1,11 @@
 """
-srq3_figure.py -- render the SRQ3 depth figure from the per-depth CSVs that
-srq3_depth.py already wrote. Separated from the computation so we can re-style
-without recomputing. Produces:
-  - srq3_depth_phi_SEM.pdf/.png      (main: SEM bands, capped at well-populated depth)
-  - srq3_depth_phi_STD.pdf/.png      (comparison: std bands, capped)
-  - srq3_depth_phi_FULL.pdf/.png     (appendix: SEM bands, ALL depths incl. sparse tail)
-Reads srq3_phi_by_depth_<ds>.csv (cols: depth, baseline_mean/std/n, llm_mean/std/n).
+srq3_figure.py -- render the depth figure (SRQ2 in the thesis) from the
+per-depth CSVs written by srq3_depth.py. Kept separate from the computation so
+the figure can be restyled without recomputing. Produces:
+  - srq3_depth_phi_SEM.pdf/.png   main figure: SEM bands, capped at the deepest
+                                  well-populated depth
+
+Reads srq3_phi_by_depth.csv
 """
 import os, sys, csv
 import numpy as np
