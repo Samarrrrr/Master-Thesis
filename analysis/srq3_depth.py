@@ -1,20 +1,23 @@
 """
-============================================================================
- srq3_depth.py  --  SRQ3: does hole creation (phi) rise with depth, and does
-                    adding the LLM team to the pool increase it?
-============================================================================
-Framing (Option B -- "with and without the new team", per Zahra):
-  Line (1) BASELINE: each OFFICIAL team held out in turn, holes counted vs the
-           other official teams. = the collection's own reusability per depth
-           (replicates Abbasiantaeb et al. Fig. 1 on CAsT-19/20).
-  Line (2) +LLM TEAM: my 4 LLM runs held out as ONE team, holes counted vs all
-           official teams. = the holes the new LLM team introduces per depth.
-Line (2) above line (1) => the LLM team reduces reusability (adds holes).
+srq3_depth.py -- depth analysis (SRQ2 in the thesis): does hole creation (phi)
+                 rise with conversational depth, and does adding the LLM team to
+                 the pool increase it?
 
-A HOLE = a doc in the held-out unit's top-k that NO run outside it retrieves to
-pooling depth. Plain phi only -- NO relevance labels. Reads paths from config.py.
-Outputs: figure (2 panels, mean +/- std), per-depth CSVs, Table 5 (collapsed).
-============================================================================
+Computed under leave-one-team-out, in two conditions:
+  (1) baseline: each official team is held out in turn and its holes counted
+      against the remaining official teams -- the collection's own per-depth
+      reusability.
+  (2) with the LLM team: the four LLM runs are held out together as one team and
+      their holes counted against the official pool.
+Line (2) lying above line (1) means the LLM team adds holes, reducing
+reusability.
+
+A hole is a document in the held-out unit's top-k that no run outside it
+retrieves to pooling depth. Uses plain phi only, with no relevance labels. Paths
+are read from config.py.
+
+Outputs: the per-depth figure (two panels, mean +/- SEM), the per-depth CSVs,
+and the depth-collapsed totals.
 """
 import os, sys, glob, csv, json
 from collections import defaultdict
