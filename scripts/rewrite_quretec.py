@@ -1,47 +1,21 @@
 """
-============================================================================
- rewrite_quretec.py  --  Stage 2 (traditional control arm): QuReTeC rewriter
-============================================================================
+rewrite_quretec.py -- Stage 2 (traditional control arm): QuReTeC rewriter.
 
-WHAT THIS DOES
---------------
-Produces QuReTeC query rewrites for CAsT-19 and CAsT-20 in the same jsonl format
-as every other system, so QuReTeC slots in as one of the eight systems.
+Produces QuReTeC query rewrites for CAsT-2019 and CAsT-2020 in the same JSONL
+format as the other systems, so QuReTeC slots in as one of the eight.
 
-WHAT QuReTeC IS
----------------
-QuReTeC (Voskarides et al., 2020) is a NON-LLM, BERT-based term-classification
-resolver: it decides which terms from the conversation history to APPEND to the
-current utterance. It is a "traditional" rewriter (pre-LLM era) and the second
-half of the CONTROL ARM (with t5). Note its behaviour differs from generative
-rewriters: it only appends terms when its classifier fires, so it is CONSERVATIVE
--- on some turns it adds nothing and the rewrite equals the raw utterance. That
-is genuine QuReTeC behaviour (verified, see below), not a bug, and it is part of
-why QuReTeC sits lower in effectiveness than the generative rewriters -- useful
-spread for the control arm.
+QuReTeC (Voskarides et al., 2020) is a non-LLM, BERT-based term-classification
+resolver: it appends selected terms from the conversation history to the current
+utterance. Following the reference work, the rewrites are not recomputed here but
+taken from the released precomputed files (2019 uses question context, 2020
+question-and-answer context), so this arm matches the literature.
 
-WHY WE DON'T RUN IT (we use precomputed rewrites)
--------------------------------------------------
-Following QPP4CS (Meng et al.) and Abbasiantaeb et al., we do NOT run QuReTeC
-ourselves. We use the PRECOMPUTED rewrites released by Vakulenko et al. -- the
-same ones the reference papers use -- so this arm matches the literature exactly.
-Per-year files differ: 2019 = Q (question context), 2020 = QnA (question+answer
-context). We take both as-is; this is the one documented exception to our
-otherwise questions-only context standardisation.
+Source files (columns: conversation_id, turn_id, id, query, original):
+    2019: rewrites/2019/5_QuReTeC_Q.tsv
+    2020: rewrites/2020/5_QuReTeC_QnA.tsv
 
-VERIFIED (against real data): the qid join is perfect -- the tsv covers all of
-our turns (479/479 on 2019) and the raw-fallback below NEVER fired (0 turns).
-Every QuReTeC turn got its real Vakulenko rewrite. The turns where the rewrite
-equals raw are genuine QuReTeC no-ops (mostly turn-1 + conservative deeper turns),
-not join failures.
-
-SOURCE (Vakulenko et al., cast_evaluation repo):
-  2019: rewrites/2019/5_QuReTeC_Q.tsv      2020: rewrites/2020/5_QuReTeC_QnA.tsv
-  (tsv columns: conversation_id  turn_id  id  query  original)
-
-OUTPUT: rewrites_<dataset>_quretec.jsonl
-  each line: {query_id, dataset, model, depth, raw_utterance, rewrite}
-============================================================================
+Output: rewrites_<dataset>_quretec.jsonl
+        each line: {query_id, dataset, model, depth, raw_utterance, rewrite}
 """
 
 import argparse
