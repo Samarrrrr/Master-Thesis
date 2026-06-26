@@ -1,21 +1,17 @@
 """
-============================================================================
- label_holes.py  --  uniform LLM relevance labelling of the UNION hole set
-============================================================================
-Labels EVERY hole in union_holes_<ds>.csv with a PINNED gpt-4o snapshot, so
-phi+ (option a) has one consistent assessor version across all holes and both
-pools. Method is byte-identical to the validated judge_holes.py: same system
-prompt, same one-shot canonical-positive construction, same passage fetch,
-temperature 0, 0-4 scale.
+label_holes.py -- uniform LLM relevance labelling of the union hole set.
 
-Resumable: appends as it goes; on restart, skips (qid,docid) already written.
-Writes hole_labels_pinned_<ds>.csv with a model-provenance column. Does NOT
-touch the old hole_labels_<ds>.csv.
+Labels every hole in union_holes_<ds>.csv with a pinned gpt-4o snapshot, so that
+phi+ uses one consistent assessor across all holes and both pools. The procedure
+matches the validated assessor: same system prompt, one-shot canonical-positive
+construction, passage fetch, temperature 0, and 0-4 scale. Runs are resumable:
+already-written (qid, docid) pairs are skipped on restart.
+
+Output: hole_labels_pinned_<ds>.csv, including a model-provenance column.
 
 Run (per dataset):
-  python label_holes.py --dataset cast2019
-  python label_holes.py --dataset cast2020
-============================================================================
+    python label_holes.py --dataset cast2019
+    python label_holes.py --dataset cast2020
 """
 import os, sys, csv, json, time, argparse
 sys.path.insert(0, os.path.dirname(__file__)); import config as c
