@@ -191,3 +191,4 @@ commands (per system and per collection).
 - On CAsT-2020, official runs that are themselves T5- or QuReTeC-based are excluded
   from the pool when scoring the `t5`/`qretec` systems, so the traditional arm counts
   as genuinely non-contributing (`baselineQR` and `humanQR` are retained).
+- Scripts and result files use the label `srq3` for what the thesis calls **SRQ2** (the depth analysis). The names are equivalent.
