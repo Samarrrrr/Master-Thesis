@@ -2,9 +2,6 @@
 
 A controlled comparison on **TREC CAsT 2019 and 2020**.
 
-MSc Information Studies (Data Science) thesis, University of Amsterdam.
-Author: **Samar Jamshaid** · Supervisor: **Zahra Abbasiantaeb** (UvA IRLab)
-
 ---
 
 ## What this project investigates
