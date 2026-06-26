@@ -1,16 +1,11 @@
 """
-eda_plots.py  --  exploratory data analysis figures the guidelines ask for.
+eda_plots.py
 
 Produces four EDA plots per dataset (saved to results/figures/):
   1. relevance grade distribution (qrels)               eda_grades_<ds>.png
   2. conversation depth distribution (judged turns)     eda_depth_<ds>.png
   3. judged vs unjudged at the studied systems' top-10  eda_judged_<ds>.png
   4. corpus composition of relevant docs (MARCO vs CAR) eda_corpus_<ds>.png
-Also prints the basic statistics behind each, for the Data subsection text.
-
-Corpus split is inferred from docid prefixes: CAR ids start with non-digit
-(e.g. they contain letters / 'CAR_'), MARCO ids are integer-like. Adjust the
-is_car() heuristic if your ids differ.
 """
 import argparse, csv, glob, json, os, sys
 from collections import Counter, defaultdict
