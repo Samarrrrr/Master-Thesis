@@ -45,11 +45,21 @@ resolution stage varies**, so any difference in the holes a system creates is
 attributable to query resolution alone.
 
 ```
-utterance ──► [query resolution] ──► BM25 (top 100) ──► MiniLM cross-encoder rerank ──► ranked list
-                  (only this varies)                                                        │
-                                                                                            ▼
-                                                          reusability analysis (vs qrels + official pool)
-                                                          φ, φ⁺ (holes labelled by LLM assessor), Unjudged@10
+conversational turn + context
+        │
+        ▼
+  [1] QUERY REWRITER     ← the ONLY thing that varies (8 systems)
+        │  one standalone query string
+        ▼
+  [2] BM25 (Pyserini, k1=0.9, b=0.4, top-100)   ← fixed, shared index
+        │
+        ▼
+  [3] cross-encoder rerank (ms-marco-MiniLM-L-6-v2)  ← fixed
+        │
+        ▼
+  [4] TREC run file  →  reusability analysis
+         φ, φ⁺ (holes labelled by the pinned gpt-4o assessor), Unjudged@10
+         leave-one-model-out (SRQ1) · leave-one-team-out (SRQ2)
 ```
 
 - First stage: **BM25** (k1 = 0.9, b = 0.4), top 100 passages (Pyserini).
