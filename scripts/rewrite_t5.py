@@ -1,37 +1,19 @@
 """
-============================================================================
- rewrite_t5.py  --  Stage 2 (traditional control arm): T5-CANARD rewriter
-============================================================================
+rewrite_t5.py -- Stage 2 (traditional control arm): T5-CANARD rewriter.
 
-WHAT THIS DOES
---------------
-Produces T5 query rewrites for CAsT-19 and CAsT-20, in the same jsonl format as
-every other system, so t5 slots into the pipeline as one of the eight systems.
+Produces T5 query rewrites for CAsT-2019 and CAsT-2020 in the same JSONL format
+as the other systems, so t5 slots in as one of the eight.
 
-WHAT T5-CANARD IS
------------------
-A T5-base seq2seq model fine-tuned on CANARD to rewrite a context-dependent
-question into a self-contained one (castorini/t5-base-canard -- the SAME model
-Abbasiantaeb et al. and Meng et al. use). It is a "traditional" (non-LLM)
-rewriter and forms half of the CONTROL ARM (with QuReTeC). Comparing the LLMs
-against t5/QuReTeC at matched effectiveness is what isolates a genuinely
-LLM-specific reusability effect from a mere effectiveness effect.
+T5-CANARD (castorini/t5-base-canard) is a T5-base seq2seq model fine-tuned on
+CANARD to rewrite a context-dependent question into a self-contained one, the
+same model used by the reference work. It is a non-LLM rewriter and, with
+QuReTeC, forms the traditional control arm. Context is the previous raw
+utterances joined with the current utterance (CANARD-style " ||| "), matching the
+context the LLM arm receives, so only the rewriter differs. Decoding is greedy
+(num_beams=1), matching the temperature-0 LLM arm.
 
-CONTEXT (verified): QUESTIONS-ONLY, same as every other rewriter
-----------------------------------------------------------------
-build_input joins the `context` field (previous RAW UTTERANCES only -- see
-build_queries.py) with the current utterance, CANARD-style with " ||| ". This is
-the same questions-only context the LLM arm receives, so all automatic rewriters
-see identical context. This is the deliberate single-varying-factor design: only
-the rewriter differs, not the context it is given. (It differs from QPP4CS, which
-feeds CAsT-20 t5 the canonical responses; we standardise instead -- documented.)
-
-DETERMINISM: greedy decoding (num_beams=1), matching the temp-0 LLM arm. A small
-deviation from any beam-search setup in the reference papers; stated in methods.
-
-OUTPUT: rewrites_<dataset>_t5.jsonl
-  each line: {query_id, dataset, model, depth, raw_utterance, rewrite}
-============================================================================
+Output: rewrites_<dataset>_t5.jsonl
+        each line: {query_id, dataset, model, depth, raw_utterance, rewrite}
 """
 
 import argparse
