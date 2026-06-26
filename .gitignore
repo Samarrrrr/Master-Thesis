@@ -1,14 +1,37 @@
+# ---- Python ----
 __pycache__/
 *.pyc
+
+# ---- Secrets: NEVER commit ----
+.env
+*.env
+!.env.example
+
+# ---- Large data / regenerable artifacts (not redistributed) ----
 *.trec
 *.jsonl
 *.tsv
 *.tar.gz
-results/
 queries/
 rewrites/
 runs/
-*.env
-.env
 /scratch-shared/
+
+# ---- OS ----
 .DS_Store
+
+# ---- results/: ignore folder, then allow committed outputs ----
+results/*
+!results/figures/
+!results/figures/**
+!results/table3_phiplus_mixed_cast2019.csv
+!results/table3_phiplus_mixed_cast2020.csv
+!results/table3_phiplus_officialonly_cast2019.csv
+!results/table3_phiplus_officialonly_cast2020.csv
+!results/table4_posrate_cast2019.csv
+!results/table4_posrate_cast2020.csv
+!results/table5_total_phi.csv
+!results/srq3_phi_by_depth_cast2019.csv
+!results/srq3_phi_by_depth_cast2020.csv
+!results/hole_labels_pinned_cast2019.csv
+!results/hole_labels_pinned_cast2020.csv

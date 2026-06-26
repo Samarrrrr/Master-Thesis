@@ -1,0 +1,9 @@
+system,arm,ndcg@3,holes,positive_rate
+raw,floor,0.166,805,0.005
+gpt-4o-mini,llm,0.301,571,0.072
+quretec,traditional,0.319,244,0.041
+llama-3.1-8b-instant,llm,0.332,512,0.115
+t5,traditional,0.36,163,0.067
+llama-3.3-70b-versatile,llm,0.37,296,0.179
+gpt-4o,llm,0.406,234,0.175
+human,ceiling,0.468,74,0.23

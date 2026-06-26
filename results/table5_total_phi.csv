@@ -1,0 +1,5 @@
+dataset,line,phi_per_turn_mean,phi_per_turn_std,n
+cast2019,official_baseline,5.759,6.13,13412
+cast2019,llm_team,8.251,6.605,479
+cast2020,official_baseline,5.314,6.597,4536
+cast2020,llm_team,9.796,7.873,216

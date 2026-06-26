@@ -1,0 +1,9 @@
+system,arm,unjudged@10,phi,phi_plus_total,phi_plus_per_turn,turns
+human,ceiling,0.1387,189,78,0.4509,173
+quretec,traditional,0.1717,251,88,0.5087,173
+t5,traditional,0.1815,267,89,0.5145,173
+gpt-4o,llm,0.2503,385,190,1.0983,173
+gpt-4o-mini,llm,0.2879,448,174,1.0058,173
+llama-3.3-70b-versatile,llm,0.3023,476,197,1.1387,173
+raw,floor,0.3549,590,53,0.3064,173
+llama-3.1-8b-instant,llm,0.3561,561,203,1.1734,173
