@@ -1,45 +1,25 @@
 """
-============================================================================
- rewrite_llm.py  --  Stage 2 (LLM arm): single-rewrite query resolver
-============================================================================
+rewrite_llm.py -- Stage 2 (LLM arm): single-rewrite query resolver.
 
-WHAT THIS DOES
---------------
-For ONE LLM, turn every conversational turn into a single standalone search
-query. This is the ONLY place an LLM acts in the whole experiment -- it rewrites
-the query; it does NOT retrieve or rank.
+For one LLM, turn each conversational turn into a single standalone query. This
+is the only place an LLM acts in the experiment: it rewrites the query, it does
+not retrieve or rank.
+    input:  raw="Is it treatable?"  context=["What is throat cancer?"]
+    output: "Is throat cancer treatable?"
 
-    input:   raw="Is it treatable?"  context=["What is throat cancer?"]
-    output:  "Is throat cancer treatable?"
+Models (selected by --model): gpt-4o, gpt-4o-mini (OpenAI); llama-3.1-8b-instant,
+llama-3.3-70b-versatile (Groq).
 
-These rewrites become the query BM25 searches with (Stage 3). Because every
-system shares the same BM25->reranker pipeline, the rewrite is the ONLY thing
-that differs -- so any difference in holes/ranking traces to the rewriter.
+Prompt: the zero-shot LLMQR prompt for GPT-4 and Llama models (Abbasiantaeb et al., EACL 2026), 
+used verbatim so the rewrites are comparable to that paper's GPT4QR/LlamaQR baselines.
+The iKAT persona line is omitted, as CAsT has no persona. Context is the previous
+raw utterances, matching the t5 arm (single-variable design). Temperature 0 for
+determinism. Output is taken as a bare query (stripped, no preamble). Runs are
+resumable: already-written query_ids are skipped, so a crash never re-pays an API
+call and the rewrites act as cached, reproducible artifacts.
 
-MODELS (one script, selected by --model):
-    OpenAI:  gpt-4o, gpt-4o-mini
-    Groq:    llama-3.1-8b-instant, llama-3.3-70b-versatile
-
-PROMPT (verified): MQ4CS Table 6 single-rewrite prompt, VERBATIM
-----------------------------------------------------------------
-Used exactly as published (Abbasiantaeb et al., EACL 2026) so our rewrites are
-comparable to that paper's GPT4QR/LlamaQR baselines. The iKAT-only persona line
-is omitted (CAsT has no persona). Context = previous raw utterances joined by
-newlines -- the SAME questions-only context the t5 arm gets (single-varying-
-factor design). Temperature 0 for determinism/reproducibility.
-
-OUTPUT (verified clean -- no preamble/chatter, used as-is): the API returns a
-bare standalone query; we .strip() it and feed it straight to retrieval. (We
-spot-checked all four models' outputs -- they are clean queries, e.g.
-"Is throat cancer treatable?", with no "Sure, here is..." wrapping.)
-
-RESUMABLE: re-running skips query_ids already written, so a crash never re-pays
-an API call; every line is flushed immediately. This effectively freezes the
-rewrites as reproducible cached artifacts.
-
-OUTPUT: rewrites_<dataset>_<model>.jsonl
-  each line: {query_id, dataset, model, depth, raw_utterance, rewrite}
-============================================================================
+Output: rewrites_<dataset>_<model>.jsonl
+        each line: {query_id, dataset, model, depth, raw_utterance, rewrite}
 """
 
 import argparse
